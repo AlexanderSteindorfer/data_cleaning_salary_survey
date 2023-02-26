@@ -27,5 +27,5 @@ Furthermore, I decided to include a short analysis of key figures to prove that 
 * The necessity of balancing input and output in the data cleaning process. A lot of time can be spent on it, but it must be calculated how much effort is reasonable.
 * That performing analysis can shed further light on what may be necessary in the cleaning process.
 * Different methods and statements in MySQL, such as SUBSTRING and CASE WHEN, which are really useful in the cleaning process, also to get an alternative view on what is to be cleaned.
-* How to create a new table, using a SELECT statement to define it's contents.
+* How to create a new table, using a SELECT statement to define its contents.
 * That reading in a csv file into a SQL server might be the most troublesome part of a project.
