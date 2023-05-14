@@ -912,7 +912,9 @@ UPDATE salary_survey
 UPDATE salary_survey
     SET us_state = 'Missouri'
         WHERE country = 'USA'
-        AND us_state = 'Mississippi, Missouri';
+        AND (us_state = 'Mississippi, Missouri'
+             OR city = 'Kansas City, MO'
+        );
 
 UPDATE salary_survey
     SET us_state = 'Montana'
@@ -933,7 +935,9 @@ UPDATE salary_survey
              AND city IN (
                 'Marlton', 'Florham Park'
              )
-             OR city = 'Jersey City, NJ'
+             OR city IN (
+                'Jersey City, NJ', 'Cherry Hill, NJ'
+             )
         );
 
 -- The second condition is based on a SELECT query looking for the rows where us_state
@@ -969,6 +973,10 @@ UPDATE salary_survey
         AND us_state IN (
             'Indiana, Ohio', 'Kentucky, Ohio'
         );
+
+UPDATE salary_survey
+    SET us_state = 'Oregon'
+        WHERE city = 'Portland, OR';
 
 UPDATE salary_survey
     SET us_state = 'Oregon'
@@ -1012,15 +1020,18 @@ UPDATE salary_survey
 UPDATE salary_survey
     SET us_state = 'Virginia'
         WHERE country = 'USA'
-        AND us_state IN (
-            'District of Columbia, Virginia', 'Texas, Virginia'
+        AND (us_state IN (
+                'District of Columbia, Virginia', 'Texas, Virginia'
+             )
+             OR us_state = 'Maryland, Virginia'
+             AND city = 'Reston'
         );
 
 UPDATE salary_survey
     SET us_state = 'Virginia'
-        WHERE country = 'USA'
-        AND us_state = 'Maryland, Virginia'
-        AND city = 'Reston';
+        WHERE city IN (
+            'Falls Church, VA', 'Herndon, Virginia'
+        );
 
 UPDATE salary_survey
     SET us_state = 'Washington'
@@ -1056,6 +1067,12 @@ FROM salary_survey
     WHERE country = 'USA'
 ORDER BY city ASC;
 
+SELECT DISTINCT(city)
+FROM salary_survey
+    WHERE country = 'USA'
+    AND city LIKE '%buenos%'
+ORDER BY city ASC;
+
 -- Distinct city entries ordered by the length of the entry, which shows
 -- mostly unclean entries first.
 SELECT DISTINCT(city)
@@ -1069,7 +1086,7 @@ SELECT
     us_state
 FROM salary_survey
     WHERE country = 'USA'
-    AND city LIKE '%work%'
+    AND city LIKE '%francisco%'
 ORDER BY city ASC;
 
 -- First I quickly scroll through the results and replace some of them with NULL.
@@ -1080,35 +1097,37 @@ UPDATE salary_survey
         WHERE country = 'USA'
         AND (city IN (
                 '12043', '', '-', '--', '-----', '.', '0', '46901', 'Xx', 'xxx', 'Xxxx',
-                'A major one', 'all over N CA', 'All, travel', 'Not saying',
-                'Based on current client project', 'O', 'Not provided', 
-                'Nope', 'Eastern MA (not Boston)', 'Not Detroit', 'Traveling',
-                'NA (remote). Live near Boston, work is based in upstate NY',
+                'A major one', 'all over N CA', 'All, travel', 'Not saying', 'Connecticut',
+                'Based on current client project', 'O', 'Not provided', 'Alabama',
+                'Nope', 'Eastern MA (not Boston)', 'Not Detroit', 'Traveling', 'Minnesota',
                 'I travel every week to different cities.', 'Northeast Ohio suburb',
-                'I work majority for companies in the state of California.',
+                'I work majority for companies in the state of California.', 'Capital Region',
                 'This would narrow things down too much, sorry!', 'Idaho' 'NW WI',
-                'Montclair (not actual city, but same region for anonymity)',
+                'Montclair (not actual city, but same region for anonymity)', 'Le Center',
                 'Eastern WI City; approx. pop 50,000', 'Suburban School District',
                 'This info will make me identifiable', 'This identifies my employer',
-                'This is too identifying', 'This would help identify me',
+                'This is too identifying', 'This would help identify me', 'Long Island, NY',
                 'This would probably out me', 'This would definitely reveal my identity',
-                'My city + industry would ID my employer', 'Major Metro Area',
+                'My city + industry would ID my employer', 'Major Metro Area', 'Maryland',
                 'Major metropolitan area', 'Major state metro area', 'metro', 'Metro west',
                 'Metro-west', 'West Metro', 'City', 'Small City', 'Mid-size city',
                 'Midsized city', 'Medium size city', 'Central IL', 'Central Iowa',
                 'Central KY', 'Central Maine', 'Central MD', 'Central NJ', 'Central NY',
                 'Central Ohio', 'Central PA', 'Central Valley', 'Central Virginia',
                 'Northcentral WI', 'N.A.', 'na', 'My house', 'near San Antonio',
-                'No', 'none', 'Normal', 'Normal I’ll', 'NoVA', 'Pennsylvania',
+                'No', 'none', 'Normal', 'Normal I’ll', 'NoVA', 'Pennsylvania', 'Idaho',
                 'redacted (sorry)', 'Regional', 'remove', 'Sorry, no', 'South Texas',
                 'Southeast WI', 'southern IL', 'Southern California', 'Southern CA',
                 'Southern Maine', 'Southern Maryland', 'Southern MN', 'Telecommute',
                 'To Much Detail', 'Truth or Consequences', 'USA', 'Utah', 'Utah County',
                 'Virtual', 'Work across the whole state', 'Few hours outside Columbus',
-                'Not identifying, but the Central Valley, CA', 'Illinois, Iowa, Missouri'
+                'Not identifying, but the Central Valley, CA', 'Illinois, Iowa, Missouri',
                 'Stillwater: WI based company, office in MN', 'NY', 'NW', 'SC', 'WA', 'TBD',
                 'RTP', 'QAC', 'CDA', 'Anon', 'Blank', 'CFL', 'dino', 'Skip', 'Free', 'Iowa',
-                'city in Middle Georgia', 'Research Triangle region'
+                'city in Middle Georgia', 'Research Triangle region', 'Edmonton, Alberta',
+                'Illinois, Iowa, Missouri', 'NW WI', 'Los A6', 'NE Ohio', 'Other', 'Texas',
+                'Washington state', 'CENTRAL CITY', 'Central Illinois', 'Central Kentucky',
+                'Buenos Aires', 'massachussets', 'Michigan', 'Mid-Michigan'
                 )
             OR city LIKE '%n/a%'
             OR city LIKE '%small%'
@@ -1124,15 +1143,46 @@ UPDATE salary_survey
             OR city LIKE '%multiple%'
             OR city LIKE '%decline%'
             OR city LIKE '%rural%'
+            OR city LIKE '%upstate%'
         )
         AND city NOT IN (
-            'Small City', 'Small Town Ohio', 'Fuquay Varina', 'Minneapolis, MN/Atlanta, GA'
+            'Fuquay Varina', 'Minneapolis, MN/Atlanta, GA'
         );
 
 UPDATE salary_survey
-    SET city = 'Albany'
+    SET city = 'Albany',
+        us_state = 'New York'
         WHERE country = 'USA'
-        AND city = 'Near Albany';
+        AND city IN (
+            'Near Albany', 'Albany region', 'Albany, NY'
+        );
+
+UPDATE salary_survey
+    SET city = 'Albuquerque'
+        WHERE city = 'Albuquerqur';
+
+UPDATE salary_survey
+    SET city = 'Alexandria',
+        us_state = 'Virginia'
+        WHERE country = 'USA'
+        AND city IN (
+            'Alexandria, VA', 'Alexandria VA'
+        );
+
+UPDATE salary_survey
+    SET city = 'Ann Arbor'
+        WHERE city IN (
+            'Ann Arbor area', 'near Ann Arbor'
+        );
+
+UPDATE salary_survey
+    SET city = 'Annandale'
+        WHERE city = 'annandale Va';
+
+
+UPDATE salary_survey
+    SET city = 'Anchorage'
+        WHERE city = 'Anchoragr';
 
 UPDATE salary_survey
     SET city = 'Arlington',
@@ -1165,6 +1215,11 @@ UPDATE salary_survey
     SET city = 'Belfast'
         WHERE country = 'USA'
         AND city LIKE '%Belfast - for context%';
+
+UPDATE salary_survey
+    SET city = 'Bethesda'
+        WHERE country = 'USA'
+        AND city = 'Bethesda MD';
         
 -- These happen to be either Boston or in the greater Boston area,
 -- therefore I will change them to Boston.
@@ -1199,6 +1254,7 @@ UPDATE salary_survey
         AND (us_state = 'Illinois'
              AND city LIKE '%chicago%'
              AND city != 'Chicago'
+             OR city = 'Chicacgo'
         );
 
 -- Now those that don't have the state Illinois yet.
@@ -1223,7 +1279,9 @@ UPDATE salary_survey
     SET city = 'Cincinnati',
         us_state = 'Ohio'
         WHERE country = 'USA'
-        AND city = 'Payroll is out of Cincinnati';
+        AND city IN (
+            'Payroll is out of Cincinnati', 'Cincinatti'
+        );
 
 UPDATE salary_survey
     SET city = 'Denver'
@@ -1265,7 +1323,8 @@ UPDATE salary_survey
     SET city = 'Houston'
         WHERE country = 'USA'
         AND city IN (
-            'Houston Area', 'Houston metro area', 'Houston-Galveston-Brazoria area'
+            'Houston Area', 'Houston metro area', 'Houston-Galveston-Brazoria area',
+            'Houston Texas'
         );
 
 UPDATE salary_survey
@@ -1282,12 +1341,28 @@ UPDATE salary_survey
         AND city = 'Jax';
 
 UPDATE salary_survey
+    SET city = 'Kansas City',
+        us_state = 'Missouri'
+        WHERE city IN (
+            'Kansas City', 'Kansa City', 'Kansas Citt', 'Kansas City area',
+            'Kansas City Region'
+        );
+
+UPDATE salary_survey
+    SET city = 'Las Vegas',
+        us_state = 'Nevada'
+        WHERE city IN (
+            'Las vegas', 'Las begas'
+        );
+
+UPDATE salary_survey
     SET city = 'Los Angeles'
         WHERE country = 'USA'
         AND city IN (
             'LA', 'Los Angeles area', 'Los Angeles metro area', 'Los Angeles, CA',
-            'Los Angeles, or I travel for work',
-            'Los Angeles, but I work with people in Europe including the company owner'
+            'Los Angeles, or I travel for work', 'Los Angles', 'Los Angeles Metro',
+            'Los Angeles, but I work with people in Europe including the company owner',
+            'Los Angeles County'
         );
 
 UPDATE salary_survey
@@ -1295,7 +1370,8 @@ UPDATE salary_survey
         us_state = 'Virginia'
         WHERE country = 'USA'
         AND city IN (
-            'McLean though I travel some', 'Mclean, VA outside of DC'
+            'Mclean', 'McClean', 'McLean though I travel some', 'Mclean, VA outside of DC',
+            'McLean, VA'
         );
 
 UPDATE salary_survey
@@ -1317,7 +1393,7 @@ UPDATE salary_survey
         WHERE country = 'USA'
         AND city IN (
             'Greater Minneapolis metro area', 'Minneapolis metro', 'Minnepolis',
-            'Minnespolis'
+            'Minnespolis', 'Minneapilis', 'Minneapolis suburbs', 'Edina - Minneapolis'
         );
 
 UPDATE salary_survey
@@ -1353,11 +1429,17 @@ UPDATE salary_survey
         us_state = 'New York'
         WHERE country = 'USA'
         AND city IN (
-            'Denver (but remote - company is NYC)', 'NY Suburb',
-            'Work remotely for a NYC business from Portland, ME',
+            'Denver (but remote - company is NYC)', 'NY Suburb', 'New Yor',
+            'Work remotely for a NYC business from Portland, ME', 'Queens',
             'Greater NYC area', 'NYC', 'Nyc metro', 'NYC metro area',
             'NY Metro', 'New York City, New York', 'Suburb city in Metro NY area'
         );
+
+UPDATE salary_survey
+    SET city = 'Norristown',
+        us_state = 'Pennsylvania'
+        WHERE country = 'USA'
+        AND city = 'Norristown, PA';
 
 UPDATE salary_survey
     SET city = 'Oklahoma City'
@@ -1383,34 +1465,45 @@ UPDATE salary_survey
             'Philadelphia, PA Suburbs', 'Suburb of Philadelphia', 'Suburban Philadelphia',
             'Suburbs of Philadelphia', 'Greater Philadelphia area', 'Philadelphia area',
             'OUtside Philadelphia', 'Phialdelphia', 'Philadelphia (but clients everywhere)',
-            'Philadelphiai', 'Philadlephia', 'Philiadelpia', 'Philadelphia, PA'
+            'Philadelphiai', 'Philadlephia', 'Philiadelpia', 'Philadelphia, PA',
+            'Philedelphia', 'Philadephia', 'philly', 'Greater Philly', "Philly 'burbs"
         );
 
 UPDATE salary_survey
     SET city = 'Phoenix'
         WHERE country = 'USA'
-        AND city = 'Phx';
+        AND city IN (
+            'Phx', 'Phoenix Area'
+        );
 
 UPDATE salary_survey
     SET city = 'Pittsburgh',
         us_state = 'Pennsylvania'
         WHERE country = 'USA'
         AND city IN (
-            'Pittsburg', 'Pittsburgh area', 'Pittsburgh, PA'
+            'Pittsburg', 'Pittsburgh area', 'Pittsburgh, PA', 'Pittaburgh'
         );
 
 UPDATE salary_survey
-    SET city = 'Portland'
+    SET city = 'Portland',
+        us_state = 'Oregon'
         WHERE country = 'USA'
         AND city IN (
             'Beaverton, OR (Portland suburb)', 'Portland area', 'Portland Metro area',
-            'Portland metro', 'South portland', 'North of Portland'
+            'Portland metro', 'South portland', 'North of Portland', 'Greater Portland',
+            'Portland OR', 'Potland', 'Portlanf'
         );
 
 UPDATE salary_survey
     SET city = 'Rancho Cucamonga'
         WHERE country = 'USA'
         AND city = 'Telecommute from Anaheim, CA; employer office in Rancho Cucamonga, CA';
+
+UPDATE salary_survey
+SET city = 'Redmond',
+    us_state = 'Washington'
+    WHERE country = 'USA'
+    AND city = 'Seattle (company is in Redmond)';
 
 UPDATE salary_survey
     SET city = 'Salt Lake City'
@@ -1422,14 +1515,17 @@ UPDATE salary_survey
 UPDATE salary_survey
     SET city = 'San Diego'
         WHERE country = 'USA'
-        AND city = 'I work remotely, but based in San Diego';
+        AND city IN (
+            'I work remotely, but based in San Diego', 'San Deigo', 'San Dieg'
+        );
 
 UPDATE salary_survey
     SET city = 'San Francisco',
     us_state = 'California'
         WHERE country = 'USA'
         AND city IN (
-            'SF', 'San Fransico', 'San Fransisco', 'South San Francisco'
+            'SF', 'San Fransico', 'San Fransisco', 'South San Francisco',
+            'Sam Francisco'
         );
 
 UPDATE salary_survey
@@ -1438,13 +1534,20 @@ UPDATE salary_survey
         WHERE country = 'USA'
         AND city IN (
             'Yakima but my employer is based in Seattle', 'Seattle Area',
-            'Greater Seattle area', 'Seattle metro', 'Near Seattle'
+            'Greater Seattle area', 'Seattle metro', 'Near Seattle',
+            'Seatle', 'Seatlle'
         );
 
 UPDATE salary_survey
     SET city = 'St. Louis'
         WHERE country = 'USA'
         AND city = 'STL';
+
+UPDATE salary_survey
+    SET city = 'St. Thomas',
+        us_state = 'United States Virgin Island'
+        WHERE country = 'USA'
+        AND city = 'St. Thomas, USVI';
 
 UPDATE salary_survey
     SET city = 'Washington, D.C.'
@@ -1460,8 +1563,9 @@ UPDATE salary_survey
         city = 'Washington, D.C.'
         WHERE city IN (
             'DC area', 'DC metro area, mostly DC and Montgomery County MD', 'DC suburb',
-            'Northern Virginia (Washington, DC metro)', 'D.C.', 'Hjsjs',
-            'Washington DC metro area', 'DMV Metro Area'
+            'Northern Virginia (Washington, DC metro)', 'D.C.', 'Hjsjs', 'Washington DC suburbs',
+            'Washington DC metro area', 'DMV Metro Area', 'Washington, D.C', 'Washington',
+            'District of Columbia'
         );
 
 -- Looking at city entries that contain terms like "remote" and 'work from home".
@@ -1654,7 +1758,7 @@ UPDATE salary_survey
         AND city IN (
             'SF Bay Area', 'Bay Area', 'Bay Area / Palo Alto', 'Belmont, CA (SF Bay Area)',
             'Central Valley/Bay Area', 'East Bay area', 'Bay Area, CA', 'north bay',
-            'Walnut Creek (SF Bay Area)', 'East Bay'
+            'Walnut Creek (SF Bay Area)', 'East Bay', 'SF Bay'
         );
 
 -- The Twin Cities are Minneapolis and Saint Paul in Minnesota.
@@ -1698,15 +1802,15 @@ ORDER BY city ASC;
 UPDATE salary_survey
     SET city = NULL
         WHERE city IN (
-                'East Coast USA', 'Eastern', 'Eastern Iowa', 'Eastern MA', 'Eastern Washington',
-                'Key West', 'Metrowest area', 'Midwest', 'Midwest area', 'Midwest IL',
-                'Midwest region', 'North Coast', 'North Carolina', 'North East', 'North Georgia',
-                'North Jersey', 'Northeast Florida', 'Northeast Ohio', 'Northern California',
-                'northern CO', 'Northern Michigan', 'Northern VA', 'northern vermont',
-                'Northern Virginia', 'Northwest', 'Northwest Georgia', 'Northwest Lower MI',
-                'South', 'south central AK', 'Southwest MI', 'West TN', 'Western KS',
-                'Western MA', 'Western Mass', 'Western MD', 'Western US', 'East Rutherford',
-                'Eastern WA', 'South Jersey'
+            'East Coast USA', 'Eastern', 'Eastern Iowa', 'Eastern MA', 'Eastern Washington',
+            'Key West', 'Metrowest area', 'Midwest', 'Midwest area', 'Midwest IL',
+            'Midwest region', 'North Coast', 'North Carolina', 'North East', 'North Georgia',
+            'North Jersey', 'Northeast Florida', 'Northeast Ohio', 'Northern California',
+            'northern CO', 'Northern Michigan', 'Northern VA', 'northern vermont',
+            'Northern Virginia', 'Northwest', 'Northwest Georgia', 'Northwest Lower MI',
+            'South', 'south central AK', 'Southwest MI', 'West TN', 'Western KS',
+            'Western MA', 'Western Mass', 'Western MD', 'Western US', 'East Rutherford',
+            'Eastern WA', 'South Jersey'
         );
 
 UPDATE salary_survey
@@ -1728,6 +1832,41 @@ UPDATE salary_survey
 UPDATE salary_survey
     SET city = 'West Palm Beach'
         WHERE city = 'West Palm Beaxh';
+
+
+-- Once more looking for city entries containing a comma, as these caused problems
+-- with visualisation.
+SELECT
+    city,
+    us_state
+FROM salary_survey
+    WHERE country = 'USA'
+    AND city LIKE '%,%'
+    AND city != 'Washington, D.C.'
+ORDER BY city ASC;
+
+SELECT
+    TRIM(SUBSTRING(city, 1, LOCATE(',', city) -1)),
+    us_state
+FROM salary_survey
+    WHERE country = 'USA'
+    AND city LIKE '%,%'
+    AND city NOT IN (
+        'Washington, D.C.', 'Denver, Chicago', 'Littleton, MA / Manchester, NH',
+        'Minneapolis, MN/Atlanta, GA', 'San Jose, CA and Tulsa, OK', 
+        'Washington, DC - Baltimore, MD area.', 'Wilmington, DE and Philadelphia, PA'
+        );
+
+-- Deleting the part after the comma after checking the result above.
+UPDATE salary_survey
+    SET city = TRIM(SUBSTRING(city, 1, LOCATE(',', city) -1))
+        WHERE country = 'USA'
+        AND city LIKE '%,%'
+        AND city NOT IN (
+            'Washington, D.C.', 'Denver, Chicago', 'Littleton, MA / Manchester, NH',
+            'Minneapolis, MN/Atlanta, GA', 'San Jose, CA and Tulsa, OK', 
+            'Washington, DC - Baltimore, MD area.', 'Wilmington, DE and Philadelphia, PA'
+        );
 
 
 -- ------------------------------------------------------------------------------------------

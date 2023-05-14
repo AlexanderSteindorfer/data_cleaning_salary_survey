@@ -17,6 +17,10 @@ I restricted myself to MySQL, as this is meant to be an exercise in this particu
 **2.** Cleaning of the dataset.<br>
 **3.** Creation of a new table which only holds US data.<br>
 **4.** Short analysis of the cleaned US data.<br/><br/>
+***Find my visualisation of the cleaned data in Tableau:***
+https://public.tableau.com/app/profile/alexander.steindorfer/viz/project_salary_survey_us/MapUSStates
+<br/><br/>
+
 
 ### **Goals of this project**<br>
 The cleaning of the dataset is the main focus of the project. It is meant to make the survey results usable in an analysis. I focused especially on US data, but I might come back at a later point to clean the data for other locations, as this would also allow different approaches to an analysis.<br>
